@@ -16,7 +16,16 @@ export class ShoppingListService {
   }
 
   addIngredient(ingredient: Ingredient) {
-    this.ingredients.push(ingredient);
+    const existingIngredient = this.ingredients.find(
+      (ing) => ing.name.toLowerCase() === ingredient.name.toLowerCase()
+    );
+
+    if (existingIngredient) {
+      existingIngredient.amount = existingIngredient.amount + ingredient.amount;
+    } else {
+      this.ingredients.push(ingredient);
+    }
+
     this.ingredientsChanged.emit(this.ingredients.slice());
   }
 
@@ -24,7 +33,8 @@ export class ShoppingListService {
     // for (let ingredient of ingredients) {
     //   this.addIngredient(ingredient);
     // }
-    this.ingredients.push(...ingredients);
+    // this.ingredients.push(...ingredients);
+    ingredients.forEach((ingredient) => this.addIngredient(ingredient));
     this.ingredientsChanged.emit(this.ingredients.slice());
   }
 }
