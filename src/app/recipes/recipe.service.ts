@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
 
 import { Ingredient } from '../shared/ingredient.model';
 import { ShoppingListService } from '../shopping-list/shopping-list.service';
@@ -6,6 +7,8 @@ import { Recipe } from './recipe.model';
 
 @Injectable()
 export class RecipeService {
+  recipesChanged = new Subject<Recipe[]>();
+
   private recipes: Recipe[] = [
     new Recipe(
       'Tasty Schnitzel',
@@ -19,6 +22,12 @@ export class RecipeService {
       'https://upload.wikimedia.org/wikipedia/commons/b/be/Burger_King_Angus_Bacon_%26_Cheese_Steak_Burger.jpg',
       [new Ingredient('Buns', 2), new Ingredient('Meat', 1)]
     ),
+    // new Recipe(
+    //   'Spaghetti Bolognese',
+    //   'The traditional pasta recipe from Italy',
+    //   'https://static.fanpage.it/wp-content/uploads/sites/22/2021/06/spaghetti-bolognese.jpg',
+    //   [new Ingredient('Spaghetti', 100), new Ingredient('Tomatoes', 3)]
+    // ),
   ];
 
   constructor(private slService: ShoppingListService) {}
@@ -33,5 +42,20 @@ export class RecipeService {
 
   addIngredientsToShoppingList(ingredients: Ingredient[]) {
     this.slService.addIngredients(ingredients);
+  }
+
+  addRecipe(recipe: Recipe) {
+    this.recipes.push(recipe);
+    this.recipesChanged.next(this.recipes.slice());
+  }
+
+  updateRecipe(index: number, newRecipe: Recipe) {
+    this.recipes[index] = newRecipe;
+    this.recipesChanged.next(this.recipes.slice());
+  }
+
+  deleteRecipe(index: number) {
+    this.recipes.splice(index, 1);
+    this.recipesChanged.next(this.recipes.slice());
   }
 }
